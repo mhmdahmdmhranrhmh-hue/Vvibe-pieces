@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - ViBE Pieces</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f4f6f9; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; font-size: 24px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        button { width: 100%; background-color: #27ae60; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #219150; }
+        .success-msg { display: none; background-color: #d4edda; color: #155724; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>لوحة تحكم ViBE Pieces ✨</h1>
+    <div id="msg" class="success-msg">تمت إضافة المنتج بنجاح! 🎉</div>
+
+    <form id="productForm">
+        <div class="form-group">
+            <label>اسم القطعة</label>
+            <input type="text" id="title" placeholder="مثال: خاتم فضة عيار 925" required>
+        </div>
+
+        <div class="form-group">
+            <label>القسم</label>
+            <select id="category" required>
+                <option value="rings">خواتم 💍</option>
+                <option value="necklaces">سلاسل 📿</option>
+                <option value="bracelets">أساور 💫</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>السعر (بالجنيه)</label>
+            <input type="number" id="price" placeholder="150" required>
+        </div>
+
+        <div class="form-group">
+            <label>رابط الصورة</label>
+            <input type="url" id="imageUrl" placeholder="https://..." required>
+        </div>
+
+        <button type="submit">إضافة المنتج للمتجر 🚀</button>
+    </form>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  // 🔴 حطي هنا إعدادات Firebase الخاصة بيكِ
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  document.getElementById('productForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const price = document.getElementById('price').value;
+      const imageUrl = document.getElementById('imageUrl').value;
+
+      // حفظ البيانات في الـ Firebase
+      const newProductRef = database.ref('products/' + category).push();
+      newProductRef.set({
+          name: title,
+          price: price,
+          image: imageUrl
+      }).then(() => {
+          document.getElementById('msg').style.display = 'block';
+          document.getElementById('productForm').reset();
+          setTimeout(() => { document.getElementById('msg').style.display = 'none'; }, 3000);
+      });
+  });
+</script>
+
+</body>
+</html>
